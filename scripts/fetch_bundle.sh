@@ -3,7 +3,7 @@
 # The bundle has files >100 MB, so it's hosted rather than committed to git.
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-URL="${LFM2_BUNDLE_URL:-https://github.com/shershah1024/lfm2-vl-ane/releases/download/v0.1.0/lfm2-vl-ane-20260529.tar.gz}"
+URL="${LFM2_BUNDLE_URL:-https://github.com/shershah1024/lfm2-vl-ane/releases/download/v0.2.0/lfm2.5-vl-ane-20260602.tar.gz}"
 cd "$ROOT"
 if [ -d bundle ]; then echo "bundle/ already present — delete it to re-fetch."; exit 0; fi
 echo "downloading bundle (~500 MB) from $URL ..."

@@ -23,5 +23,5 @@ SOFTWARE.
 ----------------------------------------------------------------------------
 NOTE: This MIT license covers ONLY the application/runtime code in this repo
 (the `Lfm2VlKit` Swift package and `scripts/`). The MODEL WEIGHTS distributed
-via the bundle are a Derivative Work of LiquidAI/LFM2-VL-450M and are governed
+via the bundle are a Derivative Work of LiquidAI/LFM2.5-VL-450M and are governed
 by the LFM Open License v1.0 — see MODEL_LICENSE and NOTICE.

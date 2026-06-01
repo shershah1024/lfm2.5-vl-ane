@@ -1,6 +1,6 @@
-# LFM2-VL on the Apple Neural Engine
+# LFM2.5-VL on the Apple Neural Engine
 
-A vision-language model ([LiquidAI **LFM2-VL-450M**](https://huggingface.co/LiquidAI/LFM2-VL-450M))
+A vision-language model ([LiquidAI **LFM2.5-VL-450M**](https://huggingface.co/LiquidAI/LFM2.5-VL-450M))
 converted to run **entirely on the Apple Neural Engine** — image in, grounded answer out, at
 ~1–2 W, fully on-device, no cloud, no Python at runtime.
 
@@ -62,7 +62,7 @@ bundle/
 | | |
 |---|---|
 | Prefill (one-pass, 275-token prompt incl. image) | **~50 ms** |
-| Decode (KV cache, O(1)/token) | **~60–70 tok/s** |
+| Decode (KV cache, O(1)/token) | **~62 tok/s** |
 | Full caption after load | **~0.8 s** |
 | Power | **~1–2 W** (ANE) vs ~8–15 W on the GPU |
 | Neural Engine residency | **100%** of language + vision ops |
@@ -71,6 +71,8 @@ bundle/
 ## What it's good at — and not
 
 - **Great:** describing natural images and scenes, identifying objects, layout, colors, "what's in this."
+  LFM2.5 also adds **visual grounding** (bounding-box prediction) and **multilingual** captions
+  (en, zh, ja, ko, fr, es, de, ar, pt) — prompt-driven, no extra setup.
 - **Weak:** transcribing **dense text / document pages**. The model is 450M params and uses a single
   512² image tile, so an A4 page gets squashed and body text becomes unreadable — it'll give you an
   accurate *gist* but it is **not an OCR/document reader**.
@@ -79,15 +81,16 @@ bundle/
 
 ## About the model — Liquid AI
 
-The model this project runs, **[LFM2-VL-450M](https://huggingface.co/LiquidAI/LFM2-VL-450M)**, is an
+The model this project runs, **[LFM2.5-VL-450M](https://huggingface.co/LiquidAI/LFM2.5-VL-450M)**, is an
 open-weight vision-language model from **[Liquid AI](https://www.liquid.ai/)**, part of their LFM2
-family of on-device foundation models. This repository is an independent **CoreML / Apple Neural
-Engine port** of that model — all model credit belongs to Liquid AI. See the license terms below.
+family of on-device foundation models (the refreshed successor to LFM2-VL-450M, adding visual grounding
+and multilingual support). This repository is an independent **CoreML / Apple Neural Engine port** of
+that model — all model credit belongs to Liquid AI. See the license terms below.
 
 ## Model & license
 
 - **Code** (the `Lfm2VlKit` package + `scripts/`): **MIT** — see [`LICENSE`](LICENSE).
-- **Model bundle**: a Derivative Work of **[LiquidAI/LFM2-VL-450M](https://huggingface.co/LiquidAI/LFM2-VL-450M)**
+- **Model bundle**: a Derivative Work of **[LiquidAI/LFM2.5-VL-450M](https://huggingface.co/LiquidAI/LFM2.5-VL-450M)**
   (CoreML conversion + 8-bit quantization), governed by the **LFM Open License v1.0** —
   see [`MODEL_LICENSE`](MODEL_LICENSE) and [`NOTICE`](NOTICE).
 
