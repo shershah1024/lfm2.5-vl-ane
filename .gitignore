@@ -1,0 +1,7 @@
+# model bundle is fetched, not committed (files >100 MB)
+/bundle/
+# swift build artifacts
+.build/
+**/.build/
+.DS_Store
+*.xcodeproj
