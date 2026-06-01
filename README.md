@@ -77,6 +77,22 @@ bundle/
 - **Tips:** prompt it to *describe the elements* rather than *transcribe the text*; the decoder uses a
   repetition penalty so it won't loop. See [WHY_ANE.md](WHY_ANE.md) for the full tradeoffs.
 
+## About the model — Liquid AI
+
+The model this project runs, **[LFM2-VL-450M](https://huggingface.co/LiquidAI/LFM2-VL-450M)**, is the
+work of **[Liquid AI](https://www.liquid.ai/)** — an MIT CSAIL spinout founded by Ramin Hasani,
+Mathias Lechner, Alexander Amini, and Daniela Rus (director of MIT CSAIL), the researchers behind
+**liquid neural networks**, an architecture rooted in dynamical systems and signal processing.
+
+It belongs to **LFM2**, Liquid's second-generation family of open-weight **Liquid Foundation Models**
+built to run on-device across CPU / NPU / GPU. Released in August 2025, **LFM2-VL-450M** pairs the
+**LFM2-350M** language backbone with an **~86M-parameter SigLIP2 NaFlex** vision encoder and was
+fine-tuned on roughly **100B multimodal tokens**; Liquid reports ~2× faster GPU inference than
+comparable VLMs.
+
+This repository is an independent **CoreML / Apple Neural Engine port** of that open-weight model —
+all model credit belongs to Liquid AI. See the license terms below.
+
 ## Model & license
 
 - **Code** (the `Lfm2VlKit` package + `scripts/`): **MIT** — see [`LICENSE`](LICENSE).
