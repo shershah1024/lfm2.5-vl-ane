@@ -158,7 +158,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         port = UInt16(env["LFM2_PORT"] ?? "8765") ?? 8765
     }
     var body: some Scene {
-        WindowGroup("LFM2-VL on ANE") {
+        WindowGroup("LFM2.5-VL on ANE") {
             ContentView().environmentObject(state)
                 .task { await state.start(bundle: bundle, port: port) }
         }

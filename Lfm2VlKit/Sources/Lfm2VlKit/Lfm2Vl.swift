@@ -5,7 +5,7 @@ import ImageIO
 import CoreGraphics
 import Tokenizers
 
-/// On-device LFM2-VL runtime (KV-cache decode). Loads a bundle from make_bundle.py and runs
+/// On-device LFM2.5-VL runtime (KV-cache decode). Loads a model bundle and runs
 /// image+text -> caption on the Neural Engine. Attention KV-cache + short-conv state are carried
 /// as host-side I/O tensors (seq=1 decode blocks); decode is O(1)/token.
 public final class Lfm2Vl {
