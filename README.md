@@ -38,8 +38,16 @@ git clone <this repo> && cd lfm2-vl-ane
   let engine = try await Lfm2Vl(bundle: bundleURL)          // .cpuAndNeuralEngine
   let answer = try engine.caption(image: imageURL, question: "Describe this image.")
   ```
+- **Visual grounding (bounding boxes):** LFM2.5 predicts boxes from a detection prompt. Detection/JSON
+  prompts are auto-detected (the app/REST switch to clean greedy decode so coordinate JSON isn't mangled):
+  ```bash
+  PROMPT='Detect all instances of: a person. Response must be a JSON array:
+  [{"label": ..., "bbox": [x1, y1, x2, y2]}, ...]. Coordinates are normalized to [0,1].'
+  curl -s localhost:8765/caption -d "{\"image\":\"$IMG\",\"prompt\":\"$PROMPT\"}"
+  # -> [{"label":"a person","bbox":[0.31,0.18,0.52,0.74]}, ...]
+  ```
 
-The model **bundle** (compiled CoreML, ~500 MB) is hosted, not committed (it contains files
+The model **bundle** (compiled CoreML, ~590 MB) is hosted, not committed (it contains files
 >100 MB). `run_app.sh` / `run_cli.sh` fetch it automatically; or run `./scripts/fetch_bundle.sh`.
 
 ---
@@ -61,12 +69,16 @@ bundle/
 
 | | |
 |---|---|
-| Prefill (one-pass, 275-token prompt incl. image) | **~50 ms** |
-| Decode (KV cache, O(1)/token) | **~62 tok/s** |
+| Prefill (one-pass, 275-token prompt incl. image) | **~85 ms** |
+| Decode (KV cache, O(1)/token) | **~57 tok/s** |
 | Full caption after load | **~0.8 s** |
 | Power | **~1–2 W** (ANE) vs ~8–15 W on the GPU |
-| Neural Engine residency | **100%** of language + vision ops |
-| Bundle | ~590 MB on disk |
+| Neural Engine residency | vision **100%** · language **~92% of cost** (RMSNorm reductions in fp32) |
+| Bundle | ~590 MB on disk (8-bit language, fp16 vision) |
+
+> The language layers run fp16/int8 on the ANE, but the **RMSNorm reductions are kept in fp32** — true-fp16
+> reductions lose enough precision to break coordinate-precise generation (bounding boxes collapse, caption
+> tails degrade). Keeping them fp32 (a handful of cheap ops on CPU) fixes grounding at a small speed cost.
 
 ## What it's good at — and not
 

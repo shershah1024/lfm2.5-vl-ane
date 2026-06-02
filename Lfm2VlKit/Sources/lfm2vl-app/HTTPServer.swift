@@ -67,9 +67,13 @@ final class HTTPServer: @unchecked Sendable {
             return http(400, "application/json", Data(#"{"error":"expected JSON {image:base64, prompt}"}"#.utf8))
         }
         let prompt = (obj["prompt"] as? String) ?? ""
+        // optional decode overrides (bbox/JSON is auto-detected, but callers can force):
+        let maxNew = obj["max_tokens"] as? Int
+        let penalty = (obj["penalty"] as? NSNumber).map { $0.floatValue }
+        let noRepeat = obj["no_repeat"] as? Int
         let tmp = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".img")
         try? img.write(to: tmp); defer { try? FileManager.default.removeItem(at: tmp) }
-        let r = service.run(imageURL: tmp, prompt: prompt)
+        let r = service.run(imageURL: tmp, prompt: prompt, maxNew: maxNew, penalty: penalty, noRepeat: noRepeat)
         let payload: [String: Any] = ["answer": r.answer, "ms": Int(r.ms.rounded())]
         let json = (try? JSONSerialization.data(withJSONObject: payload)) ?? Data("{}".utf8)
         return http(200, "application/json", json)

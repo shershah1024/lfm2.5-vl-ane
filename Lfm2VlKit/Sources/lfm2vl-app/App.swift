@@ -10,13 +10,23 @@ final class CaptionService: @unchecked Sendable {
     let engine: Lfm2Vl
     private let queue = DispatchQueue(label: "lfm2vl.caption")     // serial
     init(_ engine: Lfm2Vl) { self.engine = engine }
-    func run(imageURL: URL, prompt: String, maxNew: Int = 96) -> (answer: String, ms: Double) {
+    func run(imageURL: URL, prompt: String,
+             maxNew: Int? = nil, penalty: Float? = nil, noRepeat: Int? = nil) -> (answer: String, ms: Double) {
         queue.sync {
             let t = Date()
             let q = prompt.trimmingCharacters(in: .whitespacesAndNewlines)
+            // Structured output (e.g. visual grounding: "Detect ... JSON array [{bbox:[x1,y1,x2,y2]}]")
+            // needs clean greedy decode — the caption repetition-penalty + no-repeat-ngram corrupt
+            // legitimately-repeating coordinate JSON. Auto-detect and relax, unless the caller overrides.
+            let lc = q.lowercased()
+            let structured = lc.contains("json") || lc.contains("bbox")
+                || lc.contains("detect ") || lc.contains("[x1") || lc.contains("bounding")
+            let mt = maxNew ?? (structured ? 224 : 96)
+            let pen = penalty ?? (structured ? 1.0 : 1.3)
+            let nr = noRepeat ?? (structured ? 0 : 3)
             let ans = (try? engine.caption(image: imageURL,
                         question: q.isEmpty ? "What do you see in this image?" : q,
-                        maxNewTokens: maxNew)) ?? "(inference error)"
+                        maxNewTokens: mt, repetitionPenalty: pen, noRepeatNGram: nr)) ?? "(inference error)"
             return (ans, -t.timeIntervalSinceNow * 1000)
         }
     }

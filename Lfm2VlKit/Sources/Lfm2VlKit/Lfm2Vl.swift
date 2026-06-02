@@ -134,7 +134,7 @@ public final class Lfm2Vl {
         let H = m.language.hidden_size, HD = m.language.head_dim, NKV = m.language.num_kv_heads, T = m.language.seq_len_T
         var h = h0
         let cos1 = Array(cosF[pos*HD..<(pos+1)*HD]), sin1 = Array(sinF[pos*HD..<(pos+1)*HD])
-        var mask = [Float](repeating: -.infinity, count: T); for i in 0..<pos { mask[i] = 0 }
+        var mask = [Float](repeating: -30000.0, count: T); for i in 0..<pos { mask[i] = 0 }  // finite (ANE: -inf -> NaN)
         for (i, (model, attn)) in blocks.enumerated() {
             if attn {
                 let fp = try run(model, ["hidden_states": try array([1,1,H], h),
@@ -160,7 +160,7 @@ public final class Lfm2Vl {
     func prefill(_ embeds: [Float], _ n: Int) throws -> [Float] {
         let H = m.language.hidden_size, HD = m.language.head_dim, NKV = m.language.num_kv_heads, T = m.language.seq_len_T
         var causal = [Float](repeating: 0, count: T*T)
-        for q in 0..<T { for k in (q+1)..<T { causal[q*T+k] = -.infinity } }
+        for q in 0..<T { for k in (q+1)..<T { causal[q*T+k] = -30000.0 } }  // finite (ANE: -inf -> NaN)
         var h = embeds
         for (i, (model, attn)) in pblocks.enumerated() {
             if attn {
