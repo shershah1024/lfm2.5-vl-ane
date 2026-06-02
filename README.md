@@ -17,7 +17,7 @@ model bundle and runs the whole pipeline on the ANE.
 Requirements: **Apple Silicon Mac, macOS 15+, Swift 6 / Xcode 16.**
 
 ```bash
-git clone <this repo> && cd lfm2-vl-ane
+git clone <this repo> && cd lfm2.5-vl-ane
 ./scripts/run_app.sh          # fetches the ~500 MB bundle, builds, opens the app
 ```
 
