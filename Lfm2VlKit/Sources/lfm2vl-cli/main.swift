@@ -1,10 +1,21 @@
 import Foundation
 import Lfm2VlKit
 
-// usage: lfm2vl-cli <bundle> <image> [question]
 let args = CommandLine.arguments
+let envAll = ProcessInfo.processInfo.environment
+
+// Headless server mode: `lfm2vl-cli serve [port]` (bundle from $LFM2_BUNDLE).
+// Runs LFM2.5-VL as a localhost /caption service — sibling to the LLM daemon.
+if args.count >= 2 && args[1] == "serve" {
+    let bundle = URL(fileURLWithPath: envAll["LFM2_BUNDLE"] ?? "bundle")
+    let port = UInt16(args.count > 2 ? args[2] : (envAll["LFM2_PORT"] ?? "8766")) ?? 8766
+    _ = try await VlServer.start(bundle: bundle, port: port)
+    dispatchMain()
+}
+
+// usage: lfm2vl-cli <bundle> <image> [question]
 guard args.count >= 3 else {
-    print("usage: lfm2vl-cli <bundle-dir> <image> [question]"); exit(1)
+    print("usage: lfm2vl-cli <bundle-dir> <image> [question]\n       lfm2vl-cli serve [port]   (LFM2_BUNDLE env)"); exit(1)
 }
 let bundle = URL(fileURLWithPath: args[1])
 let image = URL(fileURLWithPath: args[2])
