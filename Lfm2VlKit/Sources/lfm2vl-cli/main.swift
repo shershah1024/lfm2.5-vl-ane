@@ -9,8 +9,10 @@ let envAll = ProcessInfo.processInfo.environment
 if args.count >= 2 && args[1] == "serve" {
     let bundle = URL(fileURLWithPath: envAll["LFM2_BUNDLE"] ?? "bundle")
     let port = UInt16(args.count > 2 ? args[2] : (envAll["LFM2_PORT"] ?? "8766")) ?? 8766
-    _ = try await VlServer.start(bundle: bundle, port: port)
-    dispatchMain()
+    // Retain the server across dispatchMain — otherwise ARC releases it here and
+    // tears down the NWListener (process serves nothing, then exits).
+    let server = try await VlServer.start(bundle: bundle, port: port)
+    withExtendedLifetime(server) { dispatchMain() }
 }
 
 // usage: lfm2vl-cli <bundle> <image> [question]
