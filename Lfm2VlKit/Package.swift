@@ -25,5 +25,9 @@ let package = Package(
             name: "lfm2vl-app",
             dependencies: ["Lfm2VlKit"]
         ),
-    ]
+    ],
+    // Swift 5-style code (CoreML/Vision via serialized access) — build in the
+    // Swift 5 language mode so 6.x toolchains don't reject it on strict-concurrency
+    // Sendable checks (NWConnection handler, Lfm2Vl crossing actor boundaries).
+    swiftLanguageModes: [.v5]
 )

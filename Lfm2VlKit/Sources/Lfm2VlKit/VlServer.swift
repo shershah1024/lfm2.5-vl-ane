@@ -35,7 +35,7 @@ public final class VlServer: @unchecked Sendable {
         let params = NWParameters.tcp
         params.requiredLocalEndpoint = .hostPort(host: "127.0.0.1", port: NWEndpoint.Port(rawValue: port)!)
         listener = try NWListener(using: params)
-        listener.newConnectionHandler = { [weak self] conn in
+        listener.newConnectionHandler = { @Sendable [weak self] conn in
             conn.start(queue: .global())
             self?.read(conn, buffer: Data())
         }
