@@ -9,10 +9,15 @@ let envAll = ProcessInfo.processInfo.environment
 if args.count >= 2 && args[1] == "serve" {
     let bundle = URL(fileURLWithPath: envAll["LFM2_BUNDLE"] ?? "bundle")
     let port = UInt16(args.count > 2 ? args[2] : (envAll["LFM2_PORT"] ?? "8766")) ?? 8766
-    // Retain the server across dispatchMain — otherwise ARC releases it here and
-    // tears down the NWListener (process serves nothing, then exits).
+    // Keep the async main task alive forever so the process (and the NWListener,
+    // which serves on its own dispatch queues) stays up. `dispatchMain()` does NOT
+    // block when called from an async top-level main — the task completes and the
+    // process exits. Suspend on a sleep loop instead, holding `server` each pass.
     let server = try await VlServer.start(bundle: bundle, port: port)
-    withExtendedLifetime(server) { dispatchMain() }
+    while true {
+        try? await Task.sleep(nanoseconds: 3_600_000_000_000)
+        _ = server   // referenced each iteration → ARC retains it for the process's life
+    }
 }
 
 // usage: lfm2vl-cli <bundle> <image> [question]
